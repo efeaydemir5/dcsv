@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Gelişmiş Server modeli: bump/featured, owner doğrulama ve durum alanları içerir.
+model Server {
+  id             String      @id @default(cuid())
+  discordId      String      @unique
+  name           String
+  description    String?
+  shortDesc      String?
+  longDesc       String?
+  invite         String?
+  category       String?
+  ownerDiscordId String
+  membersCount   Int?
+  presenceCount  Int?
+  voiceCount     Int?
+  boostCount     Int?
+  tags           Json?
+  avatarUrl      String?
+  bannerUrl      String?
+  isFeatured     Boolean     @default(false)
+  featuredUntil  DateTime?
+  bumpedAt       DateTime    @default(now())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  status         ServerStatus @default(PENDING)
+}
+
+enum ServerStatus {
+  ACTIVE
+  PENDING
+  BANNED
+  REJECTED
+}
+
+// İleride eklenecek kullanıcı tablosu için temel model (isteğe bağlı)
+model User {
+  id           String   @id @default(cuid())
+  discordId    String   @unique
+  username     String
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+}
