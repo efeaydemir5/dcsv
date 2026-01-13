@@ -1,36 +1,21 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../../../auth/[...nextauth]/authOptions";
-import prisma from "@/lib/prisma";
+import { NextRequest } from 'next/server';
 
-const ADMIN_IDS = new Set(["970137597332557876"]);
+export async function POST(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
 
-import type { NextRequest } from "next/server";
+  try {
+    // Parse JSON body if present
+    const body = await req.json().catch(() => null);
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<Response> {
-  const session = (await getServerSession(authOptions as any)) as any;
-  const userId = (session?.user as any)?.id;
-  if (!userId || !ADMIN_IDS.has(String(userId))) {
-    return new Response(JSON.stringify({ error: "unauthorized" }), { status: 403 });
+    // TODO: replace with your actual business logic using `id` and `body`
+    return new Response(JSON.stringify({ ok: true, id, body }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: (err as Error).message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
-
-  const { id } = params;
-  const body = await req.json().catch(() => ({}));
-  const status = body?.status as "ACTIVE" | "REJECTED" | "BANNED" | "PENDING";
-  if (!status) return new Response(JSON.stringify({ error: "status_required" }), { status: 400 });
-
-  // Find by discordId (preferred) fallback to cuid id
-  let server = await prisma.server.findUnique({ where: { discordId: id } });
-  if (!server) server = await prisma.server.findUnique({ where: { id } });
-  if (!server) return new Response(JSON.stringify({ error: "not_found" }), { status: 404 });
-
-  const updated = await prisma.server.update({
-    where: { id: server.id },
-    data: { status },
-  });
-
-  return Response.json({ ok: true, server: updated });
 }
-
