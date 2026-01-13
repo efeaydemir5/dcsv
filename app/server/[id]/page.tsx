@@ -2,8 +2,8 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const { id } = params;
   const s = await prisma.server.findUnique({ where: { discordId: id } });
   if (!s || s.status !== "ACTIVE") return {};
 
@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-export default async function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function ServerDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const s = await prisma.server.findUnique({ where: { discordId: id } });
   if (!s || s.status !== "ACTIVE") return notFound();
 
