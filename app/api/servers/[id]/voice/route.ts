@@ -1,6 +1,11 @@
 import prisma from "@/lib/prisma";
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+import type { NextRequest } from "next/server";
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+): Promise<Response> {
   const botHeader = req.headers.get("x-bot-token");
   const expectedBotToken = process.env.BOT_TOKEN;
   if (!expectedBotToken || botHeader !== expectedBotToken) {
