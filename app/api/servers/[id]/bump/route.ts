@@ -1,7 +1,12 @@
 import prisma from "@/lib/prisma";
 
-export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
-  const { id } = await ctx.params;
+import type { NextRequest } from "next/server";
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+): Promise<Response> {
+  const { id } = params;
 
   // Auth: either BOT_TOKEN header or ownerDiscordId in body must match
   const botToken = req.headers.get("x-bot-token") || process.env["BOT_TOKEN"];
