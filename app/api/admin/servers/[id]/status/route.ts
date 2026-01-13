@@ -4,14 +4,19 @@ import prisma from "@/lib/prisma";
 
 const ADMIN_IDS = new Set(["970137597332557876"]);
 
-export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
+import type { NextRequest } from "next/server";
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+): Promise<Response> {
   const session = (await getServerSession(authOptions as any)) as any;
   const userId = (session?.user as any)?.id;
   if (!userId || !ADMIN_IDS.has(String(userId))) {
     return new Response(JSON.stringify({ error: "unauthorized" }), { status: 403 });
   }
 
-  const { id } = await ctx.params;
+  const { id } = params;
   const body = await req.json().catch(() => ({}));
   const status = body?.status as "ACTIVE" | "REJECTED" | "BANNED" | "PENDING";
   if (!status) return new Response(JSON.stringify({ error: "status_required" }), { status: 400 });
