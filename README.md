@@ -1,3 +1,7 @@
+# Dcsunucu.com
+
+Dcsunucu.com is a small project I made for Discord server discovery. The idea was to make server promotion a bit more organized, because most Discord servers are usually shared through random invite links or crowded advertising channels.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
